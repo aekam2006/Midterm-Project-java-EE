@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/springsecurity6">
+<head>
+    <title th:text="${workshop.title}">Workshop Detail</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+
+<div class="container mt-4">
+    <div class="card shadow p-4">
+
+        <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
+        <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
+
+        <h2 th:text="${workshop.title}"></h2>
+        <hr/>
+        <p><strong>Location:</strong> <span th:text="${workshop.location}"></span></p>
+        <p><strong>Start:</strong>
+            <span th:text="${#temporals.format(workshop.startDatetime, 'yyyy-MM-dd HH:mm')}"></span>
+        </p>
+        <p><strong>Seats Remaining:</strong> <span th:text="${workshop.seatsRemaining}"></span></p>
+        <p>
+            <strong>Status:</strong>
+            <span class="badge bg-success" th:if="${workshop.status == 'ACTIVE'}">ACTIVE</span>
+            <span class="badge bg-danger" th:if="${workshop.status == 'CANCELLED'}">CANCELLED</span>
+        </p>
+        <p><strong>Description:</strong> <span th:text="${workshop.description}"></span></p>
+
+        <div sec:authorize="isAuthenticated()">
+            <div th:if="${workshop.status == 'ACTIVE' and workshop.seatsRemaining > 0}">
+                <div th:if="${!alreadyRegistered}">
+                    <form th:action="@{/workshops/{id}/register(id=${workshop.id})}"
+                          method="post">
+                        <button class="btn btn-success" type="submit">Register</button>
+                    </form>
+                </div>
+                <div th:if="${alreadyRegistered}">
+                    <p class="text-success fw-bold">
+                        You are already registered for this workshop.
+                    </p>
+                </div>
+            </div>
+            <div th:if="${workshop.status == 'CANCELLED'}">
+                <p class="text-danger fw-bold">This workshop has been cancelled.</p>
+            </div>
+            <div th:if="${workshop.seatsRemaining == 0 and workshop.status == 'ACTIVE'}">
+                <p class="text-warning fw-bold">This workshop is sold out.</p>
+            </div>
+        </div>
+
+        <div sec:authorize="!isAuthenticated()" class="mt-3">
+            <a href="/login" class="btn btn-outline-primary">Login to Register</a>
+        </div>
+
+        <div class="mt-3">
+            <a href="/" class="btn btn-secondary">Back to Home</a>
+        </div>
+
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
