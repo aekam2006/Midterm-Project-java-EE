@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Admin — Registrations</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+
+<div class="container mt-4">
+    <h2 class="mb-4">
+        Registrations for "<span th:text="${workshop.title}"></span>"
+    </h2>
+
+    <div th:if="${#lists.isEmpty(registrations)}" class="alert alert-info">
+        No registrations for this workshop yet.
+    </div>
+
+    <div class="card shadow" th:if="${!#lists.isEmpty(registrations)}">
+        <table class="table table-bordered table-hover mb-0">
+            <thead class="table-dark">
+            <tr>
+                <th>Participant Email</th>
+                <th>Registered At</th>
+                <th>Status</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="reg : ${registrations}">
+                <td th:text="${reg.user.email}"></td>
+                <td th:text="${#temporals.format(reg.createdAt, 'yyyy-MM-dd HH:mm')}"></td>
+                <td>
+                        <span class="badge bg-success"
+                              th:if="${reg.status == 'ACTIVE'}">ACTIVE</span>
+                    <span class="badge bg-secondary"
+                          th:if="${reg.status == 'CANCELLED'}">CANCELLED</span>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <a href="/admin/workshops" class="btn btn-secondary mt-3">Back to Workshops</a>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
